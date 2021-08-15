@@ -1,8 +1,9 @@
 import pygame
 import random
 import pyautogui as pag
+import sys
 
-pag.alert(text='使用 ↑ ↓ ← → 控制方向，空格暂停', title='操作提示', button='OK')
+pag.alert(text='使用 ↑ ↓ ← → 控制方向，空格暂停', title='操作提示', button='我知道了')
 map_size = (500, 500)
 pygame.mixer.init()
 pygame.mixer.music.load('music\\BGM.mp3')
@@ -19,6 +20,7 @@ lenth = 4
 food_pos = [random.randrange(1, map_size[0] / 10) * 10, random.randrange(1, map_size[1] / 10) * 10]
 cell = 10
 way = ''
+replay = ''
 clock = pygame.time.Clock()
 
 
@@ -56,23 +58,25 @@ def hit_wall():
     
 
 def main():
-    global way
+    global way, replay
     while True:
         screen.fill((0, 0, 0))
         if hit_self():
             failed_bgm.play()
             pag.alert(text='你撞到自己了！', title='你失败了', button='OK')
+            replay = pag.confirm(text='是否重新开始', title='', buttons=['重玩', '退出'])
             break
         if hit_wall():
             failed_bgm.play()
             pag.alert(text='你撞到墙了！', title='你失败了', button='OK')
+            replay = pag.confirm(text='是否重新开始', title='', buttons=['重玩', '退出'])
             break
         for pos in snake_init_pos:
             draw_rect(white, pos)
         draw_rect(green, food_pos)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                break
+                sys.exit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
                     if way != 'right':
@@ -102,13 +106,23 @@ def main():
             change_pos()
         if way != 'pause':
             pygame.mixer.music.set_volume(1.0)
-            pygame.display.set_caption(f'贪吃蛇1.0    长度:{lenth}')
+            pygame.display.set_caption(f'贪吃蛇    长度:{lenth}')
         else:
             pygame.mixer.music.set_volume(0.0)
-            pygame.display.set_caption('贪吃蛇1.0    暂停中...')
+            pygame.display.set_caption('贪吃蛇    暂停中...')
         pygame.display.update()
         clock.tick(10)
 
-
 if __name__ == '__main__':
     main()
+    while True:
+        if replay == '退出':
+            sys.exit()
+        else:
+            failed_bgm.stop()
+            snake_init_pos = [[250, 250], [240, 250], [230, 250], [220, 250]]
+            head_pos = [250, 250]
+            lenth = 4
+            food_pos = [random.randrange(1, map_size[0] / 10) * 10, random.randrange(1, map_size[1] / 10) * 10]
+            way = 'pause'
+            main()
