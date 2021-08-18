@@ -1,10 +1,3 @@
-'''
-作者: Peter
-日期: 2021-08-14 22:28:41
-最后一次编辑时间: 2021-08-16 21:10:35
-简介: 一个叫贪吃蛇的游戏
-路径: \Snake\main.py
-'''
 import pygame
 import random
 import pyautogui as pag
