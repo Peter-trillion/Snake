@@ -1,9 +1,9 @@
+import os
 import pygame
 import pyautogui as pag
 import sys, json, random
 from colorama import *
 
-VERSION = 'V1.2'
 map_size = (500, 500)
 pygame.mixer.init()
 pygame.mixer.music.load('resourses\\music\\BGM.mp3')
@@ -74,7 +74,7 @@ def main():
                 with open('resourses\\data.json', 'r') as f:
                     data = json.load(f)
                 highest_score = data['highest_score']
-            pag.alert(text=f'你撞到自己了！当前长度:{lenth};最高纪录为:{highest_score}', title='你失败了', button='OK')
+            pag.alert(text=f'你撞到自己了！\n当前长度:{lenth};\n最高纪录为:{highest_score}', title='你失败了', button='OK')
             replay = pag.confirm(text='是否重新开始', title='', buttons=['重玩', '退出'])
             break
         if hit_wall():
@@ -85,7 +85,7 @@ def main():
                 with open('resourses\\data.json', 'r') as f:
                     data = json.load(f)
                 highest_score = data['highest_score']
-            pag.alert(text=f'你撞到墙了！当前长度:{lenth};最高纪录为:{highest_score}', title='你失败了', button='OK')
+            pag.alert(text=f'你撞到墙了！\n当前长度:{lenth};\n最高纪录为:{highest_score}', title='你失败了', button='OK')
             replay = pag.confirm(text='是否重新开始', title='', buttons=['重玩', '退出'])
             break
         for pos in snake_init_pos:
