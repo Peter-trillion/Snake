@@ -1,17 +1,20 @@
 import pygame
-import random
 import pyautogui as pag
-import sys
+import sys, json, random
+from colorama import *
 
-pag.alert(text='使用 ↑ ↓ ← → 控制方向，空格暂停', title='操作提示', button='我知道了')
+VERSION = 'V1.2'
 map_size = (500, 500)
 pygame.mixer.init()
-pygame.mixer.music.load('music\\BGM.mp3')
+pygame.mixer.music.load('resourses\\music\\BGM.mp3')
 pygame.mixer.music.play(-1)
-failed_bgm = pygame.mixer.Sound('music\\failed.wav')
+failed_bgm = pygame.mixer.Sound('resourses\\music\\failed.wav')
 pygame.init()
 screen = pygame.display.set_mode(map_size)
-pygame.display.set_icon(pygame.image.load('ico\\icon.ico'))
+pygame.display.set_icon(pygame.image.load('resourses\\img\\icon.ico'))
+with open('resourses\\data.json', 'r') as f:
+    data = json.load(f)
+highest_score = data['highest_score']
 white = (255, 255, 255)
 green = (0, 255, 0)
 snake_init_pos = [[250, 250], [240, 250], [230, 250], [220, 250]]
@@ -56,19 +59,33 @@ def hit_wall():
     if head_pos[0] < 0 or head_pos[0] >= map_size[0] or head_pos[1] < 0 or head_pos[1] >= map_size[1]:
         return True
     
+def startwindow():
+    pag.alert(text='使用 ↑ ↓ ← → 控制方向，空格暂停', title='操作提示', button='我知道了')
 
 def main():
-    global way, replay
+    global way, replay, highest_score
     while True:
         screen.fill((0, 0, 0))
         if hit_self():
             failed_bgm.play()
-            pag.alert(text='你撞到自己了！', title='你失败了', button='OK')
+            if lenth > highest_score:
+                with open('resourses\\data.json', 'w') as w:
+                    json.dump({'highest_score':lenth}, w)
+                with open('resourses\\data.json', 'r') as f:
+                    data = json.load(f)
+                highest_score = data['highest_score']
+            pag.alert(text=f'你撞到自己了！当前长度:{lenth};最高纪录为:{highest_score}', title='你失败了', button='OK')
             replay = pag.confirm(text='是否重新开始', title='', buttons=['重玩', '退出'])
             break
         if hit_wall():
             failed_bgm.play()
-            pag.alert(text='你撞到墙了！', title='你失败了', button='OK')
+            if lenth > highest_score:
+                with open('resourses\\data.json', 'w') as w:
+                    json.dump({'highest_score':lenth}, w)
+                with open('resourses\\data.json', 'r') as f:
+                    data = json.load(f)
+                highest_score = data['highest_score']
+            pag.alert(text=f'你撞到墙了！当前长度:{lenth};最高纪录为:{highest_score}', title='你失败了', button='OK')
             replay = pag.confirm(text='是否重新开始', title='', buttons=['重玩', '退出'])
             break
         for pos in snake_init_pos:
@@ -112,12 +129,16 @@ def main():
             pygame.display.set_caption('贪吃蛇    暂停中...')
         pygame.display.update()
         clock.tick(10)
+        
+def endwindow():
+    pass
 
 if __name__ == '__main__':
+    startwindow()
     main()
     while True:
         if replay == '退出':
-            sys.exit()
+            break
         else:
             failed_bgm.stop()
             snake_init_pos = [[250, 250], [240, 250], [230, 250], [220, 250]]
@@ -126,3 +147,4 @@ if __name__ == '__main__':
             food_pos = [random.randrange(1, map_size[0] / 10) * 10, random.randrange(1, map_size[1] / 10) * 10]
             way = 'pause'
             main()
+    endwindow()
